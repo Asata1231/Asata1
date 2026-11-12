@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Admin login — BankNavbat{% endblock %}
+{% block content %}
+<div class="auth-page admin-bg">
+<div class="auth-card admin-auth">
+  <div class="auth-icon admin-icon">⚙️</div>
+  <h1>Administrator paneli</h1>
+  <p>Faqat administrator uchun mo‘ljallangan kirish.</p>
+  <form method="post" class="form"><input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <label>Admin login</label><input type="text" name="login" placeholder="Admin email" required>
+    <label>Parol</label><input type="password" name="password" placeholder="Admin paroli" required>
+    <button class="btn btn-dark full">Administrator sifatida kirish</button>
+  </form>
+  <a class="back-link" href="{{ url_for('home') }}">← Bosh sahifaga qaytish</a>
+</div>
+</div>
+{% endblock %}

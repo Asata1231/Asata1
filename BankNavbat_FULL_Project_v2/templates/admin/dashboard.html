@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Admin panel — BankNavbat{% endblock %}
+{% block content %}
+<section class="admin-dashboard">
+  <div class="admin-top">
+    <div><span class="eyebrow">ADMIN CONTROL CENTER</span><h1>Administrator paneli ⚙️</h1><p>Tizimdagi foydalanuvchilar, xizmatlar va navbatlarni boshqaring.</p></div>
+    <form method="post" action="{{ url_for('logout') }}"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button class="btn btn-light">🚪 Chiqish</button></form>
+  </div>
+
+  <div class="stats-grid admin-stats">
+    <div class="stat-card"><span>👥</span><p>Foydalanuvchilar</p><strong>{{ stats.users }}</strong></div>
+    <div class="stat-card"><span>🎫</span><p>Jami navbatlar</p><strong>{{ stats.bookings }}</strong></div>
+    <div class="stat-card"><span>⏳</span><p>Kutilayotgan</p><strong>{{ stats.pending }}</strong></div>
+    <div class="stat-card"><span>🏦</span><p>Xizmatlar</p><strong>{{ stats.services }}</strong></div>
+  </div>
+
+  <div class="admin-grid">
+    <div class="panel wide">
+      <div class="panel-head"><div><h2>Navbatlar boshqaruvi</h2><p>Barcha mijozlar navbatlari.</p></div>
+        <form method="get" class="inline-form"><select name="status" onchange="this.form.submit()"><option value="">Barcha holatlar</option>{% for s in statuses %}<option {% if s == status_filter %}selected{% endif %}>{{ s }}</option>{% endfor %}</select></form></div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>№</th><th>Mijoz</th><th>Xizmat</th><th>Sana</th><th>Vaqt</th><th>Holat</th><th>Amal</th></tr></thead>
+        <tbody>
+        {% for b in bookings %}
+        <tr>
+          <td><b>#{{ b.queue_number }}</b></td>
+          <td>{{ b.user.full_name }}<small>{{ b.user.email }}</small></td>
+          <td>{{ b.service.icon }} {{ b.service.name }}</td>
+          <td>{{ b.booking_date.strftime('%d.%m.%Y') }}</td>
+          <td>{{ b.booking_time }}</td>
+          <td><span class="status {{ b.status|lower|replace(' ','-') }}">{{ b.status }}</span></td>
+          <td>
+            <form method="post" action="{{ url_for('update_booking_status', booking_id=b.id, status=status_filter) }}" class="inline-form"><input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+              <select name="status">
+                {% for s in statuses %}
+                <option {% if b.status == s %}selected{% endif %}>{{ s }}</option>
+                {% endfor %}
+              </select><button class="btn btn-small btn-primary">Saqlash</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7"><div class="empty"><div>🎫</div><h3>Navbatlar mavjud emas</h3></div></td></tr>
+        {% endfor %}
+        </tbody>
+      </table></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><div><h2>Xizmat qo‘shish</h2><p>Yangi bank xizmatini yarating.</p></div></div>
+      <form method="post" action="{{ url_for('add_service') }}" class="form"><input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+        <label>Nomi</label><input name="name" placeholder="Masalan: Valyuta ayirboshlash" required>
+        <label>Tavsif</label><textarea name="description" placeholder="Xizmat haqida..."></textarea>
+        <label>Ikonka</label><input name="icon" value="🏦">
+        <button class="btn btn-primary full">+ Xizmat qo‘shish</button>
+      </form>
+      <div class="service-admin-list">
+      {% for s in services %}
+        <div{% if not s.active %} style="opacity:.5"{% endif %}><span>{{ s.icon }}</span><b>{{ s.name }}</b>{% if not s.active %}<small>(faol emas)</small>{% endif %}
+          <form method="post" action="{{ url_for('toggle_service', service_id=s.id) }}"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button class="icon-btn" title="{{ 'Faollashtirish' if not s.active else 'Faolsizlantirish' }}">{{ '♻️' if not s.active else '🗑️' }}</button></form>
+        </div>
+      {% endfor %}
+      </div>
+    </div>
+
+    <div class="panel wide">
+      <div class="panel-head"><div><h2>Foydalanuvchilar</h2><p>Ro‘yxatdan o‘tgan mijozlar.</p></div></div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>ID</th><th>Ism</th><th>Email</th><th>Rol</th><th>Ro‘yxatdan o‘tgan</th></tr></thead>
+        <tbody>
+        {% for u in users %}
+        <tr><td>{{ u.id }}</td><td>{{ u.full_name }}</td><td>{{ u.email }}</td><td><span class="status">{{ u.role }}</span></td><td>{{ u.created_at.strftime('%d.%m.%Y %H:%M') }}</td></tr>
+        {% endfor %}
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+</section>
+{% endblock %}

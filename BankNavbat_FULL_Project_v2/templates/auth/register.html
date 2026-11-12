@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Ro‘yxatdan o‘tish — BankNavbat{% endblock %}
+{% block content %}
+<div class="auth-page">
+<div class="auth-card">
+  <div class="auth-icon">👤</div>
+  <h1>Hisob yaratish</h1>
+  <p>Bank xizmatlariga onlayn yozilish uchun ro‘yxatdan o‘ting.</p>
+  <form method="post" class="form"><input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <label>To‘liq ism</label><input name="full_name" placeholder="Ism Familiya" required>
+    <label>Email</label><input type="email" name="email" placeholder="siz@example.com" required>
+    <label>Parol</label><input type="password" name="password" minlength="6" placeholder="Kamida 6 belgi" required>
+    <button class="btn btn-primary full">Ro‘yxatdan o‘tish</button>
+  </form>
+  <p class="auth-bottom">Hisobingiz bormi? <a href="{{ url_for('login') }}">Kirish</a></p>
+</div>
+</div>
+{% endblock %}

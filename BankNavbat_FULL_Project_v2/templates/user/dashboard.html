@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Foydalanuvchi kabineti — BankNavbat{% endblock %}
+{% block content %}
+<section class="dashboard">
+  <div class="dashboard-head">
+    <div><span class="eyebrow">SHAXSIY KABINET</span><h1>Xush kelibsiz, {{ current_user.full_name }} 👋</h1><p>Bank xizmatlariga navbatlaringizni shu yerdan boshqaring.</p></div>
+    <div class="user-chip">👤 {{ current_user.email }}</div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card"><span>🎫</span><p>Jami navbatlar</p><strong>{{ bookings|length }}</strong></div>
+    <div class="stat-card"><span>⏳</span><p>Kutilayotgan</p><strong>{{ bookings|selectattr('status','equalto','Kutilmoqda')|list|length }}</strong></div>
+    <div class="stat-card"><span>✓</span><p>Bajarilgan</p><strong>{{ bookings|selectattr('status','equalto','Bajarildi')|list|length }}</strong></div>
+  </div>
+
+  <div class="dashboard-grid">
+    <div class="panel">
+      <div class="panel-head"><div><h2>Yangi navbat</h2><p>Xizmat, sana va vaqtni tanlang.</p></div><span class="panel-icon">🎫</span></div>
+      <div class="booking-options">
+      {% for service in services %}
+        <form class="booking-form" method="post" action="{{ url_for('book', service_id=service.id) }}"><input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+          <div class="service-row"><span>{{ service.icon }}</span><div><b>{{ service.name }}</b><small>{{ service.description }}</small></div></div>
+          <label>Sana</label><input type="date" name="booking_date" min="{{ today }}" required>
+          <label>Vaqt</label>
+          <select name="booking_time" required>
+            <option value="">Vaqtni tanlang</option>
+            {% for t in time_slots %}<option>{{ t }}</option>{% endfor %}
+          </select>
+          <button class="btn btn-primary full">Shu xizmatga yozilish →</button>
+        </form>
+      {% endfor %}
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><div><h2>Mening navbatlarim</h2><p>Buyurtmalaringiz holati.</p></div></div>
+      {% if bookings %}
+      <div class="booking-list">
+      {% for b in bookings %}
+        <div class="booking-item">
+          <div class="queue-number">#{{ b.queue_number }}</div>
+          <div class="booking-info"><b>{{ b.service.name }}</b><span>{{ b.booking_date.strftime('%d.%m.%Y') }} · {{ b.booking_time }}</span></div>
+          <span class="status {{ b.status|lower|replace(' ','-') }}">{{ b.status }}</span>
+          {% if b.status in ['Kutilmoqda','Tasdiqlandi'] %}
+          <form method="post" action="{{ url_for('cancel_booking', booking_id=b.id) }}" class="cancel-form" onsubmit="return confirm('Navbatni bekor qilasizmi?')"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button class="btn btn-small btn-light">Bekor qilish</button></form>
+          {% endif %}
+        </div>
+      {% endfor %}
+      </div>
+      {% else %}
+        <div class="empty"><div>🎟️</div><h3>Hozircha navbat yo‘q</h3><p>Yuqoridagi xizmatlardan birini tanlab navbat oling.</p></div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

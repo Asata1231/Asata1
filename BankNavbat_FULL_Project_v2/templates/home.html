@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}BankNavbat — Bosh sahifa{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="hero-copy">
+    <div class="eyebrow">SMART BANKING</div>
+    <h1>Bankdagi navbatni <span>onlayn</span> boshqaring</h1>
+    <p>Kerakli xizmatni tanlang, sana va vaqtni belgilang va bankka kelishdan oldin navbat raqamingizni oling.</p>
+    <div class="hero-actions">
+      {% if current_user %}
+        <a class="btn btn-primary" href="{{ url_for('dashboard') }}">Navbat olish →</a>
+      {% else %}
+        <a class="btn btn-primary" href="{{ url_for('register') }}">Boshlash →</a>
+        <a class="btn btn-light" href="{{ url_for('login') }}">Kirish</a>
+      {% endif %}
+    </div>
+  </div>
+  <div class="hero-card">
+    <div class="hero-card-top"><span>Bugungi holat</span><b class="online">● Tizim faol</b></div>
+    <div class="queue-preview"><span>Bugungi keyingi navbat</span><strong>#{{ next_number }}</strong><small>O‘rtacha kutish: 12 daqiqa</small></div>
+    <div class="mini-stat"><span>⚡ Tezkor yozilish</span><span>24/7</span></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head"><div><span class="eyebrow">XIZMATLAR</span><h2>Kerakli xizmatni tanlang</h2></div><p>Bir necha bosqichda navbat oling.</p></div>
+  <div class="service-grid">
+  {% for service in services %}
+    <article class="service-card">
+      <div class="service-icon">{{ service.icon }}</div>
+      <h3>{{ service.name }}</h3>
+      <p>{{ service.description }}</p>
+      {% if current_user %}
+        <a class="btn btn-primary full" href="{{ url_for('dashboard') }}">Navbat olish</a>
+      {% else %}
+        <a class="btn btn-primary full" href="{{ url_for('login') }}">Navbat olish</a>
+      {% endif %}
+    </article>
+  {% endfor %}
+  </div>
+</section>
+
+<section class="section how">
+  <div class="section-head center"><div><span class="eyebrow">4 QADAM</span><h2>Qanday ishlaydi?</h2></div></div>
+  <div class="steps">
+    <div><b>01</b><h3>Kirish</h3><p>Hisob yarating yoki tizimga kiring.</p></div>
+    <div><b>02</b><h3>Xizmat</h3><p>Kerakli bank xizmatini tanlang.</p></div>
+    <div><b>03</b><h3>Sana va vaqt</h3><p>O‘zingizga qulay vaqtni belgilang.</p></div>
+    <div><b>04</b><h3>Navbat</h3><p>Navbat raqamingizni oling.</p></div>
+  </div>
+</section>
+{% endblock %}
